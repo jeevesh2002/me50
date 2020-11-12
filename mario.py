@@ -1,7 +1,9 @@
-n = int(input("get pyramid height"))
-while (n<1 or n>8):
+Height = int(input("get height"))
+
+while (Height <1 or Height > 8):
    print("please enter a height between 1 and 8")
-   n = int(input("get pyramid height"))
-for i in range(1, n+1):
-    print(" " * (n-i), end="")
+   Height = int(input("get height"))
+
+for i in range(1, Height + 1):
+    print(" " * (Height - i), end="")
     print("#" * (i))
