@@ -1,9 +1,7 @@
-Height = int(input("get height"))
-
-while (Height <1 or Height > 8):
-   print("please enter a height between 1 and 8")
-   Height = int(input("get height"))
-
-for i in range(1, Height + 1):
-    print(" " * (Height - i), end="")
+from cs50 import get_int
+height = 0
+while (height > 8 or height < 1):
+    height = get_int("Height:\n")
+for i in range(1, height + 1):
+    print(" " * (height - i), end="")
     print("#" * (i))
