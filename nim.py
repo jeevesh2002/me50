@@ -27,7 +27,7 @@ class Nim():
         """
         actions = set()
         for i, pile in enumerate(piles):
-            for j in range(1, piles[i] + 1):
+            for j in range(1, pile + 1):
                 actions.add((i, j))
         return actions
 
@@ -52,7 +52,7 @@ class Nim():
         """
         pile, count = action
 
-        # Check for errors
+
         if self.winner is not None:
             raise Exception("Game already won")
         elif pile < 0 or pile >= len(self.piles):
@@ -60,7 +60,6 @@ class Nim():
         elif count < 1 or count > self.piles[pile]:
             raise Exception("Invalid number of objects")
 
-        # Update pile
         self.piles[pile] -= count
         self.switch_player()
 
@@ -99,7 +98,10 @@ class NimAI():
         Return the Q-value for the state `state` and the action `action`.
         If no Q-value exists yet in `self.q`, return 0.
         """
-        raise NotImplementedError
+        try:
+            return self.q[tuple(state), action]
+        except KeyError:
+            return 0
 
     def update_q_value(self, state, action, old_q, reward, future_rewards):
         """
@@ -113,7 +115,8 @@ class NimAI():
         `alpha` is the learning rate, and `new value estimate`
         is the sum of the current reward and estimated future rewards.
         """
-        raise NotImplementedError
+        new_q = old_q + self.alpha * ((reward + future_rewards) - old_q)
+        self.q[tuple(state), action] = new_q
 
     def best_future_reward(self, state):
         """
@@ -124,7 +127,13 @@ class NimAI():
         Q-value in `self.q`. If there are no available actions in
         `state`, return 0.
         """
-        raise NotImplementedError
+        max_reward = 0
+
+        for sta, q in self.q.items():
+            if sta[0] == state and q > max_reward:
+                max_reward = q
+
+        return max_reward
 
     def choose_action(self, state, epsilon=True):
         """
@@ -138,7 +147,32 @@ class NimAI():
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        raise NotImplementedError
+
+        max_reward = 0
+        best_action = None
+
+        available_moves = Nim.available_actions(state)
+
+        for move in available_moves:
+            try:
+                q = self.q[tuple(state), move]
+            except KeyError:
+                q = 0
+
+            if q > max_reward:
+                max_reward = q
+                best_action = move
+
+        if max_reward == 0:
+            return random.choice(tuple(available_moves))
+
+        if not epsilon:
+            return best_action
+        else:
+            if random.random() < self.epsilon:
+                return random.choice(tuple(available_moves))
+            else:
+                return best_action
 
 
 def train(n):
